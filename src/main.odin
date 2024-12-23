@@ -3,6 +3,7 @@
 package main
 
 import "dodo"
+import "core:math"
 
 ctx1: dodo.Context
 ctx2: dodo.Context
@@ -17,7 +18,9 @@ update :: proc(ctx: ^dodo.Context, dt: f32) {
     })
 
     ctx.curr_depth = +1
-    dodo.draw_rect(ctx, {50, 50}, {32, 64}, {255, 0, 255, 255})
+    dodo.draw_rect(ctx, {50 + math.mod(ctx.accum_time, 3) * 50, 50}, {32, 64}, {255, 0, 255, 255})
+
+    dodo.draw_line(ctx, {200, 200}, {500, 300}, 2, {200, 100, 50, 255})
 
 }
 
