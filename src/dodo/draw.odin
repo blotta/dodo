@@ -2,12 +2,18 @@
 
 package dodo
 
+import "core:math"
 import glm "core:math/linalg"
 
-draw_rect :: proc(ctx: ^Context, pos: Vec2, size: Vec2, col: Color) {
+check_draw_call :: proc(ctx: ^Context) {
     if len(ctx.draw_calls) == 0 {
         append(&ctx.draw_calls, Draw_Call{})
     }
+}
+
+draw_rect :: proc(ctx: ^Context, pos: Vec2, size: Vec2, col: Color) {
+
+    check_draw_call(ctx)
 
     z := ctx.curr_depth
 
@@ -26,9 +32,8 @@ draw_rect :: proc(ctx: ^Context, pos: Vec2, size: Vec2, col: Color) {
 }
 
 draw_quad :: proc(ctx: ^Context, verts: [4]Vertex) {
-    if len(ctx.draw_calls) == 0 {
-        append(&ctx.draw_calls, Draw_Call{})
-    }
+
+    check_draw_call(ctx)
 
     z := ctx.curr_depth
 
@@ -37,9 +42,8 @@ draw_quad :: proc(ctx: ^Context, verts: [4]Vertex) {
 }
 
 draw_line :: proc(ctx: ^Context, start: Vec2, end: Vec2, thickness: f32, col: Color) {
-    if len(ctx.draw_calls) == 0 {
-        append(&ctx.draw_calls, Draw_Call{})
-    }
+
+    check_draw_call(ctx)
 
     z := ctx.curr_depth
 
@@ -58,4 +62,36 @@ draw_line :: proc(ctx: ^Context, start: Vec2, end: Vec2, thickness: f32, col: Co
     append(&ctx.vertices, Vertex{pos = {c.x, c.y, z}, col = col, uv = {1, 1}})
     append(&ctx.vertices, Vertex{pos = {d.x, d.y, z}, col = col, uv = {0, 1}})
     append(&ctx.vertices, Vertex{pos = {a.x, a.y, z}, col = col, uv = {0, 0}})
+}
+
+draw_circle :: proc(ctx: ^Context, center: Vec2, radius: f32, col: Color, segments: int = 32) {
+    draw_ellipse(ctx, center, {radius, radius}, col, segments)
+}
+
+draw_ellipse :: proc(ctx: ^Context, center: Vec2, #no_broadcast radii: Vec2, col: Color, segments: int = 32) {
+
+    check_draw_call(ctx)
+
+    z := ctx.curr_depth
+
+    c := Vertex{pos = { center.x, center.y, z}, col = col}
+
+    for i in 0..<segments {
+        t0 := f32(i+0)/f32(segments) * math.TAU
+        t1 := f32(i+1)/f32(segments) * math.TAU
+
+        a := c
+        b := c
+
+        a.pos.x += radii.x * math.cos(t0)
+        a.pos.y += radii.y * math.sin(t0)
+
+        b.pos.x += radii.x * math.cos(t1)
+        b.pos.y += radii.y * math.sin(t1)
+
+        append(&ctx.vertices, c)
+        append(&ctx.vertices, a)
+        append(&ctx.vertices, b)
+    }
+
 }

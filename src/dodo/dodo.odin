@@ -178,7 +178,6 @@ draw_all :: proc(ctx: ^Context) -> bool {
     }
     {
         a_uv := gl.GetAttribLocation(ctx.program, "a_uv")
-        fmt.println("uv", a_uv)
         gl.EnableVertexAttribArray(a_uv)
         gl.VertexAttribPointer(a_uv, 2, gl.FLOAT, false, size_of(Vertex), offset_of(Vertex, uv))
     }
