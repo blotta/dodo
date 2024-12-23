@@ -1,0 +1,1 @@
+odin build src -out:dodo.wasm -target:js_wasm32

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+    <title>Dodo</title>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        #dodo-canvas {
+            width: 100%;
+            height: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align: center;">Dodo</h1>
+    <canvas id="dodo-canvas"></canvas>
+    <pre id="dodo-console" style="border: 1px solid black"></pre>
+
+    <!-- Copy `core:sys/wasm/js/odin.js` into your web server -->
+    <script type="text/javascript"
+        src="runtime.js"></script>
+    <script type="text/javascript">
+        odin.runWasm("/dodo.wasm", document.getElementById("dodo-console"));
+    </script>
+</body>
+
+</html>
