@@ -37,12 +37,17 @@ draw_rect_lines :: proc(ctx: ^Context, pos: Vec2, size: Vec2, thickness: f32, co
     draw_rect(ctx, pos - t + {size.x, 0}, {0, size.y} + thickness, col)
 }
 
-draw_quad :: proc(ctx: ^Context, verts: [4]Vertex) {
+draw_quad :: proc(ctx: ^Context, verts: [4]Vec2, color: Color) {
 
     check_draw_call(ctx)
 
-    append(&ctx.vertices, verts[0], verts[1], verts[2])
-    append(&ctx.vertices, verts[2], verts[3], verts[0])
+    a := Vertex{pos = verts[0], col = color}
+    b := Vertex{pos = verts[1], col = color}
+    c := Vertex{pos = verts[2], col = color}
+    d := Vertex{pos = verts[3], col = color}
+
+    append(&ctx.vertices, a, b, c)
+    append(&ctx.vertices, c, d, a)
 }
 
 draw_line :: proc(ctx: ^Context, start: Vec2, end: Vec2, thickness: f32, col: Color) {
@@ -126,4 +131,22 @@ draw_ring :: proc(ctx: ^Context, center: Vec2, inner_radius, outer_radius: f32, 
 
 draw_arc :: proc(ctx: ^Context, center: Vec2, radius: f32, thickness: f32, angle_start, angle_end: f32, col: Color, segments: int = 32) {
     draw_ring(ctx, center, radius-thickness*0.5, radius+thickness*0.5, angle_start, angle_end, col, segments)
+}
+
+draw_triangle :: proc(ctx: ^Context, v0, v1, v2: Vec2, col: Color) {
+    check_draw_call(ctx)
+
+    a := Vertex{pos = v0, col = col}
+    b := Vertex{pos = v1, col = col}
+    c := Vertex{pos = v2, col = col}
+
+    append(&ctx.vertices, a, b, c)
+}
+
+draw_triangle_lines :: proc(ctx: ^Context, v0, v1, v2: Vec2, thickness: f32, col: Color) {
+    check_draw_call(ctx)
+
+    draw_line(ctx, v0, v1, thickness, col)
+    draw_line(ctx, v1, v2, thickness, col)
+    draw_line(ctx, v2, v0, thickness, col)
 }

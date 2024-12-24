@@ -10,12 +10,7 @@ ctx2: dodo.Context
 
 update :: proc(ctx: ^dodo.Context, dt: f32) {
 
-    dodo.draw_quad(ctx, {
-        { pos = { 10, 100}, col = {255,   0,   0, 255}},
-        { pos = {100, 100}, col = {255, 255,   0, 255}},
-        { pos = {100,  10}, col = {  0, 255,   0, 255}},
-        { pos = { 10,  10}, col = {  0,   0, 255, 255}}
-    })
+    dodo.draw_quad(ctx, {{ 10, 100}, {100, 100}, {100,  10}, { 10,  10}}, {0,   0, 255, 255})
 
     dodo.draw_rect(ctx, {50 + math.mod(ctx.accum_time, 3) * 50, 50}, {32, 64}, {255, 0, 255, 155})
 
@@ -29,6 +24,9 @@ update :: proc(ctx: ^dodo.Context, dt: f32) {
 
     dodo.draw_rect_lines(ctx, {100, 300}, {100, 100}, 15, {0, 0, 0, 255})
     dodo.draw_rect(ctx, {100, 300}, {100, 100}, {40, 40, 40, 255})
+
+    dodo.draw_triangle(ctx, {50, 100}, {110, 80}, {90, 120}, {100, 50, 150, 255})
+    dodo.draw_triangle_lines(ctx, {50, 100}, {110, 80}, {90, 120}, 3, {200, 150, 250, 255})
 }
 
 main :: proc() {
