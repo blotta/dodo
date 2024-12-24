@@ -22,6 +22,9 @@ update :: proc(ctx: ^dodo.Context, dt: f32) {
     dodo.draw_ring(ctx, {400, 100}, 40, 50, math.PI, 0.75*math.TAU, {255, 255, 0, 255})
     dodo.draw_arc(ctx, {400, 100}, 45, 10, 0.75*math.TAU, math.TAU, {255,   0, 0, 255})
 
+    dodo.draw_ellipse_ring(ctx, {400, 100}, {40, 80}, {50, 90}, 0, 0.5*math.PI, {0, 255, 0, 255})
+    dodo.draw_ellipse_arc(ctx, {400, 100}, {45, 85}, 10, 0.25*math.TAU, 0.5*math.TAU, {30, 30, 120, 255})
+
     dodo.draw_rect_lines(ctx, {100, 300}, {100, 100}, 15, {0, 0, 0, 255})
     dodo.draw_rect(ctx, {100, 300}, {100, 100}, {40, 40, 40, 255})
 

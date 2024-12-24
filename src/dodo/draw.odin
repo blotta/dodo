@@ -133,6 +133,41 @@ draw_arc :: proc(ctx: ^Context, center: Vec2, radius: f32, thickness: f32, angle
     draw_ring(ctx, center, radius-thickness*0.5, radius+thickness*0.5, angle_start, angle_end, col, segments)
 }
 
+draw_ellipse_ring :: proc(ctx: ^Context, center: Vec2, inner_radii, outer_radii: Vec2, angle_start, angle_end: f32, col: Color, segments: int = 32) {
+    check_draw_call(ctx)
+
+    p := Vertex{pos = { center.x, center.y}, col = col}
+
+    for i in 0..<segments {
+        t0 := math.lerp(angle_start, angle_end, f32(i+0)/f32(segments))
+        t1 := math.lerp(angle_start, angle_end, f32(i+1)/f32(segments))
+
+        a := p
+        b := p
+        c := p
+        d := p
+
+        a.pos.x += outer_radii.x * math.cos(t0)
+        a.pos.y += outer_radii.y * math.sin(t0)
+
+        b.pos.x += outer_radii.x * math.cos(t1)
+        b.pos.y += outer_radii.y * math.sin(t1)
+
+        c.pos.x += inner_radii.x * math.cos(t1)
+        c.pos.y += inner_radii.y * math.sin(t1)
+
+        d.pos.x += inner_radii.x * math.cos(t0)
+        d.pos.y += inner_radii.y * math.sin(t0)
+
+        append(&ctx.vertices, a, b, c)
+        append(&ctx.vertices, c, d, a)
+    }
+}
+
+draw_ellipse_arc :: proc(ctx: ^Context, center: Vec2, radii: Vec2, thickness: f32, angle_start, angle_end: f32, col: Color, segments: int = 32) {
+    draw_ellipse_ring(ctx, center, radii-thickness*0.5, radii+thickness*0.5, angle_start, angle_end, col, segments)
+}
+
 draw_triangle :: proc(ctx: ^Context, v0, v1, v2: Vec2, col: Color) {
     check_draw_call(ctx)
 
