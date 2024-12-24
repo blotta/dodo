@@ -30,7 +30,6 @@ Context :: struct {
     camera:     Camera,
     vertices:   [dynamic]Vertex,
     draw_calls: [dynamic]Draw_Call,
-    curr_depth: f32,
 
     is_done: bool,
 
@@ -55,7 +54,7 @@ Camera_Default :: Camera{
 }
 
 Vertex :: struct {
-    pos: Vec3,
+    pos: Vec2,
     col: Color,
     uv:  Vec2,
 }
@@ -65,6 +64,8 @@ Draw_Call :: struct {
     texture: gl.Texture,
     offset: int,
     length: int,
+    depth: f32,
+    depth_test: bool,
 }
 
 @(private)
@@ -153,15 +154,15 @@ draw_all :: proc(ctx: ^Context) -> bool {
     defer {
         clear(&ctx.vertices)
         clear(&ctx.draw_calls)
-        ctx.curr_depth = 0
     }
 
     width, height := gl.DrawingBufferWidth(), gl.DrawingBufferHeight()
     aspect_ratio := f32(max(width, 1))/f32(max(height, 1))
 
     gl.Viewport(0, 0, width, height)
-    gl.ClearColor(0.3, 0.3, 0.3, 1.0)
-    gl.Enable(gl.DEPTH_TEST)
+    gl.ClearColor(0.3, 0.3, 0.38, 1.0)
+    gl.Enable(gl.BLEND)
+    gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
     gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
     gl.UseProgram(ctx.program)
@@ -169,7 +170,7 @@ draw_all :: proc(ctx: ^Context) -> bool {
     {
         a_pos := gl.GetAttribLocation(ctx.program, "a_pos")
         gl.EnableVertexAttribArray(a_pos)
-        gl.VertexAttribPointer(a_pos, 3, gl.FLOAT, false, size_of(Vertex), offset_of(Vertex, pos))
+        gl.VertexAttribPointer(a_pos, 2, gl.FLOAT, false, size_of(Vertex), offset_of(Vertex, pos))
     }
     {
         a_col := gl.GetAttribLocation(ctx.program, "a_col")
@@ -195,6 +196,8 @@ draw_all :: proc(ctx: ^Context) -> bool {
 
         gl.UniformMatrix4fv(gl.GetUniformLocation(ctx.program, "u_mvp"), mvp)
     }
+    
+    depth_loc := gl.GetUniformLocation(ctx.program, "u_depth")
 
     if len(ctx.draw_calls) > 0 {
         last := &ctx.draw_calls[len(ctx.draw_calls)-1]
@@ -202,6 +205,12 @@ draw_all :: proc(ctx: ^Context) -> bool {
     }
 
     for dc in ctx.draw_calls {
+        gl.Uniform1f(depth_loc, dc.depth)
+        if dc.depth_test {
+            gl.Enable(gl.DEPTH_TEST)
+        } else {
+            gl.Disable(gl.DEPTH_TEST)
+        }
         gl.DrawArrays(gl.TRIANGLES, dc.offset, dc.length)
     }
 
@@ -228,8 +237,9 @@ shader_header := "#version 300 es\n"
 shader_vert := `
 
 uniform mat4 u_mvp;
+uniform float u_depth;
 
-layout(location = 0) in vec3 a_pos;
+layout(location = 0) in vec2 a_pos;
 layout(location = 1) in vec4 a_col;
 layout(location = 2) in vec2 a_uv;
 
@@ -237,7 +247,7 @@ out vec4 v_color;
 out vec2 v_uv;
 
 void main() {
-    gl_Position = u_mvp * vec4(a_pos, 1.0);
+    gl_Position = u_mvp * vec4(a_pos, u_depth, 1.0);
     v_color = a_col;
     v_uv = a_uv;
 }

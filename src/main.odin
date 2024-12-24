@@ -11,14 +11,13 @@ ctx2: dodo.Context
 update :: proc(ctx: ^dodo.Context, dt: f32) {
 
     dodo.draw_quad(ctx, {
-        { pos = { 10, 100, 0}, col = {255,   0,   0, 255}},
-        { pos = {100, 100, 0}, col = {255, 255,   0, 255}},
-        { pos = {100,  10, 0}, col = {  0, 255,   0, 255}},
-        { pos = { 10,  10, 0}, col = {  0, 255,   0, 255}}
+        { pos = { 10, 100}, col = {255,   0,   0, 255}},
+        { pos = {100, 100}, col = {255, 255,   0, 255}},
+        { pos = {100,  10}, col = {  0, 255,   0, 255}},
+        { pos = { 10,  10}, col = {  0,   0, 255, 255}}
     })
 
-    ctx.curr_depth = +1
-    dodo.draw_rect(ctx, {50 + math.mod(ctx.accum_time, 3) * 50, 50}, {32, 64}, {255, 0, 255, 255})
+    dodo.draw_rect(ctx, {50 + math.mod(ctx.accum_time, 3) * 50, 50}, {32, 64}, {255, 0, 255, 155})
 
     dodo.draw_line(ctx, {300, 300}, {500, 300}, 2, {200, 100, 50, 255})
 
@@ -27,6 +26,9 @@ update :: proc(ctx: ^dodo.Context, dt: f32) {
 
     dodo.draw_ring(ctx, {400, 100}, 40, 50, math.PI, 0.75*math.TAU, {255, 255, 0, 255})
     dodo.draw_arc(ctx, {400, 100}, 45, 10, 0.75*math.TAU, math.TAU, {255,   0, 0, 255})
+
+    dodo.draw_rect_lines(ctx, {100, 300}, {100, 100}, 15, {0, 0, 0, 255})
+    dodo.draw_rect(ctx, {100, 300}, {100, 100}, {40, 40, 40, 255})
 }
 
 main :: proc() {
